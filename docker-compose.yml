@@ -1,0 +1,28 @@
+﻿services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server
+    environment:
+      SA_PASSWORD: "Qwerty1$"
+      ACCEPT_EULA: "Y"
+    ports:
+      - "1433:1433"
+    networks:
+      - appnetwork
+  
+  verycomplexapp.api:
+    image: verycomplexapp.api
+    environment:
+      ConnectionStrings__Default: "Server=sqlserver,1433;Database=ComplexDatabase;User Id=SA;Password=Qwerty1$;TrustServerCertificate=true"
+    build:
+      context: .
+      dockerfile: VeryComplexApp.Api/Dockerfile
+    ports:
+      - "5000:8080"
+    depends_on:
+      - sqlserver
+    networks:
+        - appnetwork
+
+networks:
+  appnetwork:
+    driver: bridge
